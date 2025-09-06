@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Free Fire Auto Simulation</title>
+  <title>🌱 Food Cultivation Game</title>
   <style>
     body {
       margin: 0;
-      background: #111;
-      color: #0f0;
-      font-family: monospace;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0fff0;
+      color: #333;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -16,115 +16,136 @@
     }
 
     h1 {
-      color: #ffcc00;
+      margin-bottom: 10px;
     }
 
-    #battlefield {
-      position: relative;
-      width: 400px;
-      height: 400px;
-      background: #222;
-      border: 4px solid #0f0;
-      border-radius: 50%;
-      overflow: hidden;
-      margin: 20px 0;
-      transition: width 0.5s, height 0.5s;
+    #score {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: green;
     }
 
-    .player {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background: red;
-      border-radius: 50%;
+    .farm {
+      display: grid;
+      grid-template-columns: repeat(5, 80px);
+      gap: 10px;
     }
 
-    #log {
-      max-height: 200px;
-      overflow-y: auto;
-      width: 400px;
-      background: #000;
-      border: 1px solid #0f0;
-      padding: 10px;
+    .tile {
+      width: 80px;
+      height: 80px;
+      background: #ccc;
+      border: 2px solid #888;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
       font-size: 14px;
+      text-align: center;
+      border-radius: 8px;
+      transition: background 0.3s;
     }
 
-    .winner {
-      color: #00ffff;
-      font-size: 20px;
-      margin-top: 10px;
+    .empty {
+      background: #f0e68c;
+    }
+
+    .planted {
+      background: #a0522d;
+      color: white;
+    }
+
+    .growing {
+      background: #8fbc8f;
+      color: white;
+    }
+
+    .ready {
+      background: #228b22;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    #instructions {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #666;
     }
   </style>
 </head>
 <body>
 
-<h1>🔥 Free Fire Auto Simulation 🔥</h1>
-<div id="battlefield"></div>
-<div id="log"></div>
-<div class="winner" id="winner"></div>
+<h1>🌾 Farm Cultivate</h1>
+<div id="score">Harvested Crops: 0</div>
+<div class="farm" id="farm"></div>
+<div id="instructions">Click on a tile to plant, wait for it to grow, and click again to harvest.</div>
 
 <script>
-  const battlefield = document.getElementById('battlefield');
-  const log = document.getElementById('log');
-  const winnerDisplay = document.getElementById('winner');
+  const farm = document.getElementById('farm');
+  const scoreDisplay = document.getElementById('score');
+  let score = 0;
 
-  const totalPlayers = 20;
-  let players = [];
+  const tiles = [];
+  const tileStates = ['empty', 'planted', 'growing', 'ready'];
 
-  // Generate players
-  for (let i = 1; i <= totalPlayers; i++) {
-    const player = document.createElement('div');
-    player.classList.add('player');
-    player.dataset.name = `Player ${i}`;
-    player.style.left = `${Math.random() * 380}px`;
-    player.style.top = `${Math.random() * 380}px`;
-    battlefield.appendChild(player);
-    players.push(player);
+  function createTile(index) {
+    const tile = document.createElement('div');
+    tile.classList.add('tile', 'empty');
+    tile.dataset.state = 'empty';
+    tile.dataset.index = index;
+    tile.textContent = 'Empty';
+
+    tile.addEventListener('click', () => {
+      const state = tile.dataset.state;
+
+      if (state === 'empty') {
+        plantCrop(tile);
+      } else if (state === 'ready') {
+        harvestCrop(tile);
+      }
+    });
+
+    tiles.push(tile);
+    farm.appendChild(tile);
   }
 
-  function logEvent(text) {
-    const p = document.createElement('div');
-    p.textContent = text;
-    log.appendChild(p);
-    log.scrollTop = log.scrollHeight;
+  function plantCrop(tile) {
+    tile.dataset.state = 'planted';
+    tile.className = 'tile planted';
+    tile.textContent = 'Planted 🌱';
+
+    // After 3s → growing
+    setTimeout(() => {
+      if (tile.dataset.state === 'planted') {
+        tile.dataset.state = 'growing';
+        tile.className = 'tile growing';
+        tile.textContent = 'Growing 🌿';
+      }
+    }, 3000);
+
+    // After 6s → ready
+    setTimeout(() => {
+      if (tile.dataset.state === 'growing') {
+        tile.dataset.state = 'ready';
+        tile.className = 'tile ready';
+        tile.textContent = 'Ready! 🌾';
+      }
+    }, 6000);
   }
 
-  function shrinkBattlefield() {
-    const currentSize = parseInt(getComputedStyle(battlefield).width);
-    if (currentSize > 100) {
-      battlefield.style.width = (currentSize - 30) + "px";
-      battlefield.style.height = (currentSize - 30) + "px";
-    }
+  function harvestCrop(tile) {
+    tile.dataset.state = 'empty';
+    tile.className = 'tile empty';
+    tile.textContent = 'Empty';
+
+    score += 1;
+    scoreDisplay.textContent = 'Harvested Crops: ' + score;
   }
 
-  function eliminatePlayer() {
-    if (players.length <= 1) {
-      declareWinner();
-      return;
-    }
-
-    const randomIndex = Math.floor(Math.random() * players.length);
-    const eliminated = players.splice(randomIndex, 1)[0];
-    eliminated.remove();
-    logEvent(`${eliminated.dataset.name} has been eliminated 💀`);
-
-    shrinkBattlefield();
-
-    if (players.length === 1) {
-      declareWinner();
-    }
+  // Generate 25 tiles (5x5 farm)
+  for (let i = 0; i < 25; i++) {
+    createTile(i);
   }
-
-  function declareWinner() {
-    const winnerName = players[0]?.dataset.name || "Unknown";
-    winnerDisplay.textContent = `🏆 Winner: ${winnerName}!`;
-    logEvent(`🏆 ${winnerName} is the last survivor!`);
-    clearInterval(gameInterval);
-  }
-
-  // Start simulation
-  logEvent("🟢 Match Started with 20 players...");
-  const gameInterval = setInterval(eliminatePlayer, 1500);
 </script>
 
 </body>
