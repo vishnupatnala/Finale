@@ -2,149 +2,172 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>🌱 Food Cultivation Game</title>
+  <title>Instagram Clone</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0fff0;
-      color: #333;
+      font-family: Arial, sans-serif;
+      background: #fafafa;
+    }
+
+    header {
+      background: #fff;
+      padding: 10px 20px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      padding: 20px;
+      justify-content: space-between;
+      border-bottom: 1px solid #ddd;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
 
-    h1 {
-      margin-bottom: 10px;
+    header h1 {
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 24px;
+      color: #262626;
     }
 
-    #score {
-      margin-bottom: 20px;
-      font-size: 18px;
-      color: green;
-    }
-
-    .farm {
-      display: grid;
-      grid-template-columns: repeat(5, 80px);
+    .profile {
+      display: flex;
+      align-items: center;
       gap: 10px;
     }
 
-    .tile {
-      width: 80px;
-      height: 80px;
-      background: #ccc;
-      border: 2px solid #888;
+    .profile img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    .stories {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      overflow-x: auto;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .story {
+      flex: 0 0 auto;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .story img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid #ff004f;
+      padding: 2px;
+    }
+
+    .feed {
+      max-width: 600px;
+      margin: 20px auto;
+    }
+
+    .post {
+      background: white;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+
+    .post-header {
       display: flex;
       align-items: center;
-      justify-content: center;
+      padding: 10px;
+      gap: 10px;
+    }
+
+    .post-header img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    .post img.main-img {
+      width: 100%;
+      height: auto;
+    }
+
+    .post .actions {
+      display: flex;
+      padding: 10px;
+      gap: 15px;
+      font-size: 20px;
       cursor: pointer;
-      font-size: 14px;
-      text-align: center;
-      border-radius: 8px;
-      transition: background 0.3s;
     }
 
-    .empty {
-      background: #f0e68c;
-    }
-
-    .planted {
-      background: #a0522d;
-      color: white;
-    }
-
-    .growing {
-      background: #8fbc8f;
-      color: white;
-    }
-
-    .ready {
-      background: #228b22;
-      color: #fff;
+    .post .likes {
+      padding: 0 10px 10px;
       font-weight: bold;
-    }
-
-    #instructions {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #666;
     }
   </style>
 </head>
 <body>
 
-<h1>🌾 Farm Cultivate</h1>
-<div id="score">Harvested Crops: 0</div>
-<div class="farm" id="farm"></div>
-<div id="instructions">Click on a tile to plant, wait for it to grow, and click again to harvest.</div>
+<header>
+  <h1>Instagram</h1>
+  <div class="profile">
+    <img src="https://i.pravatar.cc/100?img=3" alt="User">
+    <span>you</span>
+  </div>
+</header>
+
+<div class="stories">
+  <div class="story">
+    <img src="https://i.pravatar.cc/60?img=10" alt="Story">
+    <div>anna</div>
+  </div>
+  <div class="story">
+    <img src="https://i.pravatar.cc/60?img=12" alt="Story">
+    <div>mike</div>
+  </div>
+  <div class="story">
+    <img src="https://i.pravatar.cc/60?img=14" alt="Story">
+    <div>sara</div>
+  </div>
+  <div class="story">
+    <img src="https://i.pravatar.cc/60?img=15" alt="Story">
+    <div>john</div>
+  </div>
+</div>
+
+<div class="feed" id="feed">
+  <div class="post">
+    <div class="post-header">
+      <img src="https://i.pravatar.cc/100?img=12" alt="user">
+      <strong>@mike</strong>
+    </div>
+    <img class="main-img" src="https://picsum.photos/600/400?random=1" alt="Post">
+    <div class="actions">
+      <span onclick="likePost(this)">❤️</span>
+    </div>
+    <div class="likes">0 likes</div>
+  </div>
+
+  <div class="post">
+    <div class="post-header">
+      <img src="https://i.pravatar.cc/100?img=13" alt="user">
+      <strong>@anna</strong>
+    </div>
+    <img class="main-img" src="https://picsum.photos/600/400?random=2" alt="Post">
+    <div class="actions">
+      <span onclick="likePost(this)">❤️</span>
+    </div>
+    <div class="likes">0 likes</div>
+  </div>
+</div>
 
 <script>
-  const farm = document.getElementById('farm');
-  const scoreDisplay = document.getElementById('score');
-  let score = 0;
-
-  const tiles = [];
-  const tileStates = ['empty', 'planted', 'growing', 'ready'];
-
-  function createTile(index) {
-    const tile = document.createElement('div');
-    tile.classList.add('tile', 'empty');
-    tile.dataset.state = 'empty';
-    tile.dataset.index = index;
-    tile.textContent = 'Empty';
-
-    tile.addEventListener('click', () => {
-      const state = tile.dataset.state;
-
-      if (state === 'empty') {
-        plantCrop(tile);
-      } else if (state === 'ready') {
-        harvestCrop(tile);
-      }
-    });
-
-    tiles.push(tile);
-    farm.appendChild(tile);
-  }
-
-  function plantCrop(tile) {
-    tile.dataset.state = 'planted';
-    tile.className = 'tile planted';
-    tile.textContent = 'Planted 🌱';
-
-    // After 3s → growing
-    setTimeout(() => {
-      if (tile.dataset.state === 'planted') {
-        tile.dataset.state = 'growing';
-        tile.className = 'tile growing';
-        tile.textContent = 'Growing 🌿';
-      }
-    }, 3000);
-
-    // After 6s → ready
-    setTimeout(() => {
-      if (tile.dataset.state === 'growing') {
-        tile.dataset.state = 'ready';
-        tile.className = 'tile ready';
-        tile.textContent = 'Ready! 🌾';
-      }
-    }, 6000);
-  }
-
-  function harvestCrop(tile) {
-    tile.dataset.state = 'empty';
-    tile.className = 'tile empty';
-    tile.textContent = 'Empty';
-
-    score += 1;
-    scoreDisplay.textContent = 'Harvested Crops: ' + score;
-  }
-
-  // Generate 25 tiles (5x5 farm)
-  for (let i = 0; i < 25; i++) {
-    createTile(i);
+  function likePost(el) {
+    const likesDiv = el.parentElement.nextElementSibling;
+    let likes = parseInt(likesDiv.textContent) || 0;
+    likes++;
+    likesDiv.textContent = `${likes} likes`;
+    el.style.color = 'red';
   }
 </script>
 
