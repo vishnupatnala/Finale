@@ -1,37 +1,88 @@
-import requests
-from plyer import notification
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Corruption Awareness</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            color: #333;
+            padding: 20px;
+        }
+        header {
+            background: #c62828;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        section {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #c62828;
+        }
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
 
-def show_weather(city):
-    # Get coordinates
-    geo_url = "https://geocoding-api.open-meteo.com/v1/search"
-    geo_params = {"name": city, "count": 1}
-    geo_res = requests.get(geo_url, params=geo_params).json()
-    if not geo_res.get("results"):
-        print("City not found.")
-        return
+    <header>
+        <h1>Corruption Awareness Report</h1>
+        <p>Understand the Impact, Spread Awareness, Act Responsibly</p>
+    </header>
 
-    lat = geo_res["results"][0]["latitude"]
-    lon = geo_res["results"][0]["longitude"]
+    <section>
+        <h2>What is Corruption?</h2>
+        <p>
+            Corruption is the abuse of entrusted power for private gain. It can take many forms,
+            including bribery, embezzlement, nepotism, and fraud. Corruption undermines trust in
+            institutions, weakens the rule of law, and hampers development.
+        </p>
+    </section>
 
-    # Get weather
-    weather_url = "https://api.open-meteo.com/v1/forecast"
-    weather_params = {"latitude": lat, "longitude": lon, "current_weather": True}
-    weather_res = requests.get(weather_url, params=weather_params).json()
-    cw = weather_res.get("current_weather")
-    if not cw:
-        print("Weather data not available.")
-        return
+    <section>
+        <h2>Types of Corruption</h2>
+        <ul>
+            <li><strong>Bribery:</strong> Giving or receiving something of value to influence a decision.</li>
+            <li><strong>Embezzlement:</strong> Stealing money from funds one is responsible for.</li>
+            <li><strong>Fraud:</strong> Deception intended to result in financial or personal gain.</li>
+            <li><strong>Nepotism:</strong> Favoring relatives or friends for jobs or benefits.</li>
+        </ul>
+    </section>
 
-    message = f"{city}: {cw['temperature']}°C, Wind {cw['windspeed']} km/h"
+    <section>
+        <h2>Impacts of Corruption</h2>
+        <ul>
+            <li>Increases poverty and inequality</li>
+            <li>Delays infrastructure and development projects</li>
+            <li>Weakens education and healthcare systems</li>
+            <li>Promotes crime and injustice</li>
+        </ul>
+    </section>
 
-    print("Weather:", message)
-    notification.notify(
-        title="Weather Update",
-        message=message,
-        timeout=5
-    )
+    <section>
+        <h2>How to Fight Corruption?</h2>
+        <ol>
+            <li>Promote transparency and accountability</li>
+            <li>Strengthen anti-corruption laws and enforcement</li>
+            <li>Report unethical behavior and raise awareness</li>
+            <li>Support honest leadership and institutions</li>
+        </ol>
+    </section>
 
-if __name__ == "__main__":
-    city = input("Enter city name: ")
-    show_weather(city)
+    <footer>
+        <p>&copy; 2025 Corruption Awareness Initiative. All rights reserved.</p>
+    </footer>
 
+</body>
+</html>
