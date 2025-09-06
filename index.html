@@ -1,175 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Instagram Clone</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #fafafa;
-    }
+import requests
+from plyer import notification
 
-    header {
-      background: #fff;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #ddd;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
+def show_weather(city):
+    # Get coordinates
+    geo_url = "https://geocoding-api.open-meteo.com/v1/search"
+    geo_params = {"name": city, "count": 1}
+    geo_res = requests.get(geo_url, params=geo_params).json()
+    if not geo_res.get("results"):
+        print("City not found.")
+        return
 
-    header h1 {
-      font-family: 'Segoe UI', sans-serif;
-      font-size: 24px;
-      color: #262626;
-    }
+    lat = geo_res["results"][0]["latitude"]
+    lon = geo_res["results"][0]["longitude"]
 
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    # Get weather
+    weather_url = "https://api.open-meteo.com/v1/forecast"
+    weather_params = {"latitude": lat, "longitude": lon, "current_weather": True}
+    weather_res = requests.get(weather_url, params=weather_params).json()
+    cw = weather_res.get("current_weather")
+    if not cw:
+        print("Weather data not available.")
+        return
 
-    .profile img {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-    }
+    message = f"{city}: {cw['temperature']}°C, Wind {cw['windspeed']} km/h"
 
-    .stories {
-      display: flex;
-      gap: 10px;
-      padding: 10px;
-      overflow-x: auto;
-      background: #fff;
-      border-bottom: 1px solid #ddd;
-    }
+    print("Weather:", message)
+    notification.notify(
+        title="Weather Update",
+        message=message,
+        timeout=5
+    )
 
-    .story {
-      flex: 0 0 auto;
-      text-align: center;
-      font-size: 12px;
-    }
+if __name__ == "__main__":
+    city = input("Enter city name: ")
+    show_weather(city)
 
-    .story img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 2px solid #ff004f;
-      padding: 2px;
-    }
-
-    .feed {
-      max-width: 600px;
-      margin: 20px auto;
-    }
-
-    .post {
-      background: white;
-      border: 1px solid #ddd;
-      margin-bottom: 20px;
-    }
-
-    .post-header {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      gap: 10px;
-    }
-
-    .post-header img {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-    }
-
-    .post img.main-img {
-      width: 100%;
-      height: auto;
-    }
-
-    .post .actions {
-      display: flex;
-      padding: 10px;
-      gap: 15px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .post .likes {
-      padding: 0 10px 10px;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
-
-<header>
-  <h1>Instagram</h1>
-  <div class="profile">
-    <img src="https://i.pravatar.cc/100?img=3" alt="User">
-    <span>you</span>
-  </div>
-</header>
-
-<div class="stories">
-  <div class="story">
-    <img src="https://i.pravatar.cc/60?img=10" alt="Story">
-    <div>anna</div>
-  </div>
-  <div class="story">
-    <img src="https://i.pravatar.cc/60?img=12" alt="Story">
-    <div>mike</div>
-  </div>
-  <div class="story">
-    <img src="https://i.pravatar.cc/60?img=14" alt="Story">
-    <div>sara</div>
-  </div>
-  <div class="story">
-    <img src="https://i.pravatar.cc/60?img=15" alt="Story">
-    <div>john</div>
-  </div>
-</div>
-
-<div class="feed" id="feed">
-  <div class="post">
-    <div class="post-header">
-      <img src="https://i.pravatar.cc/100?img=12" alt="user">
-      <strong>@mike</strong>
-    </div>
-    <img class="main-img" src="https://picsum.photos/600/400?random=1" alt="Post">
-    <div class="actions">
-      <span onclick="likePost(this)">❤️</span>
-    </div>
-    <div class="likes">0 likes</div>
-  </div>
-
-  <div class="post">
-    <div class="post-header">
-      <img src="https://i.pravatar.cc/100?img=13" alt="user">
-      <strong>@anna</strong>
-    </div>
-    <img class="main-img" src="https://picsum.photos/600/400?random=2" alt="Post">
-    <div class="actions">
-      <span onclick="likePost(this)">❤️</span>
-    </div>
-    <div class="likes">0 likes</div>
-  </div>
-</div>
-
-<script>
-  function likePost(el) {
-    const likesDiv = el.parentElement.nextElementSibling;
-    let likes = parseInt(likesDiv.textContent) || 0;
-    likes++;
-    likesDiv.textContent = `${likes} likes`;
-    el.style.color = 'red';
-  }
-</script>
-
-</body>
-</html>
